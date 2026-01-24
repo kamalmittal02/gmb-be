@@ -1,0 +1,57 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+.DS_Store
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Intellij Idea workspace files
+.idea/
+*.iml
+
+# VSCode workspace files
+*.code-workspace
+.vscode
+
+# golang vendor directory
+vendor
+
+# data directory
+data
+
+# temporary file generated during build
+build
+
+
+# .netrc file containing github access token
+.netrc
+main
+
+
+# not to be commited creds
+.creds
+.env
+
+# gosec bin and others
+bin
+Phone
+
+__debug_bin
+
+# Go workspace file
+#go.work
+
+# proto clients
+
+client/*
+config/config.yaml
+Makefile
+
+local-services
