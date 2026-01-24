@@ -3,13 +3,10 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kamalmittal01/girraj-sweet-showcase-BE/dtos"
+	"github.com/kamalmittal01/girraj-sweet-showcase-BE/injector"
 )
 
-func SetupRouter(r *gin.Engine, config *dtos.Config) {
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"status": "healthy",
-		})
-	})
-
+func SetupRouter(r *gin.Engine, config *dtos.Config, di *injector.Injector) {
+	api := r.Group("gmb-sweets-services/api/v1")
+	api.POST("/enquiries", di.EnquiryController.CreateEnquiry)
 }
