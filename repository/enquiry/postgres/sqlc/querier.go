@@ -6,11 +6,13 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
 	CreateEnquiry(ctx context.Context, arg CreateEnquiryParams) error
-	GetEnquiries(ctx context.Context) ([]GetEnquiriesRow, error)
+	GetEnquiries(ctx context.Context, createdAt pgtype.Timestamptz) ([]GetEnquiriesRow, error)
 }
 
 var _ Querier = (*Queries)(nil)

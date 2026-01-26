@@ -6,10 +6,12 @@ import (
 	"github.com/kamalmittal01/girraj-sweet-showcase-BE/request"
 	"github.com/kamalmittal01/girraj-sweet-showcase-BE/service"
 	"net/http"
+	"time"
 )
 
 type EnquiryControllerI interface {
 	CreateEnquiry(c *gin.Context)
+	GetEnquiry(c *gin.Context)
 }
 
 type EnquiryController struct {
@@ -57,4 +59,32 @@ func (eqc *EnquiryController) CreateEnquiry(c *gin.Context) {
 
 	// Return success response
 	c.JSON(http.StatusCreated, gin.H{"message": "Enquiry created successfully"})
+}
+
+func (eqc *EnquiryController) GetEnquiry(c *gin.Context) {
+	funcTag := "GetEnquiry"
+	timeStr := c.Query("created_at")
+	if timeStr == "" {
+		fmt.Printf("%s, error: created_at query parameter is required\n", funcTag)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "created_at query parameter is required"})
+		return
+	}
+
+	time, err := time.Parse(time.RFC3339, timeStr)
+	if err != nil {
+		fmt.Printf("%s, error parsing created_at: %v\n", funcTag, err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid created_at format"})
+		return
+	}
+
+	// Call the service to create the enquiry
+	res, err := eqc.EnquiryService.GetEnquiry(c.Request.Context(), time)
+	if err != nil {
+		fmt.Printf("%s, error creating enquiry: %v\n", funcTag, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create enquiry"})
+		return
+	}
+
+	// Return success response
+	c.JSON(http.StatusOK, gin.H{"enqueries": res})
 }

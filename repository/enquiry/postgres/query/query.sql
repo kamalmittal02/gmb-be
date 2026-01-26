@@ -6,4 +6,5 @@ VALUES ($1, $2, $3, $4)
 -- name: GetEnquiries :many
 SELECT id, name, phone, email, message, created_at
 FROM enquiries
-ORDER BY created_at DESC;
+WHERE created_at > $1
+ORDER BY created_at ASC;

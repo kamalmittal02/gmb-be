@@ -38,7 +38,8 @@ func (q *Queries) CreateEnquiry(ctx context.Context, arg CreateEnquiryParams) er
 const getEnquiries = `-- name: GetEnquiries :many
 SELECT id, name, phone, email, message, created_at
 FROM enquiries
-ORDER BY created_at DESC
+WHERE created_at > $1
+ORDER BY created_at ASC
 `
 
 type GetEnquiriesRow struct {
@@ -50,8 +51,8 @@ type GetEnquiriesRow struct {
 	CreatedAt pgtype.Timestamptz
 }
 
-func (q *Queries) GetEnquiries(ctx context.Context) ([]GetEnquiriesRow, error) {
-	rows, err := q.db.Query(ctx, getEnquiries)
+func (q *Queries) GetEnquiries(ctx context.Context, createdAt pgtype.Timestamptz) ([]GetEnquiriesRow, error) {
+	rows, err := q.db.Query(ctx, getEnquiries, createdAt)
 	if err != nil {
 		return nil, err
 	}
