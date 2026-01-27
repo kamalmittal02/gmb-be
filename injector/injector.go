@@ -8,6 +8,9 @@ import (
 	"github.com/kamalmittal01/girraj-sweet-showcase-BE/dtos"
 	"github.com/kamalmittal01/girraj-sweet-showcase-BE/repository/enquiry"
 	service2 "github.com/kamalmittal01/girraj-sweet-showcase-BE/service"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/sheets/v4"
+	"os"
 	"time"
 )
 
@@ -17,8 +20,16 @@ type Injector struct {
 
 func InitInjector(config *dtos.Config) *Injector {
 	db := ConnectDB(config.Database.Url)
+	rctx := context.Background()
 	repository := enquiry.NewEnquiryRepository(db)
-	service := service2.NewEnquiryService(repository)
+	sheetClient, err := SheetsService(rctx)
+	sheetsService := service2.NewSheetsService(sheetClient)
+	if err != nil {
+		fmt.Printf("error initializing sheets service: %v\n", err)
+		panic("error initializing sheets service")
+	}
+	service := service2.NewEnquiryService(repository, sheetsService)
+
 	controller := controller2.NewEnquiryController(service)
 	return &Injector{
 		EnquiryController: controller,
@@ -46,4 +57,22 @@ func ConnectDB(databaseURl string) *pgxpool.Pool {
 	}
 
 	return pool
+}
+
+func SheetsService(ctx context.Context) (*sheets.Service, error) {
+	creds, err := os.ReadFile(os.Getenv("GOOGLE_CREDENTIALS_JSON"))
+	if err != nil {
+		return nil, err
+	}
+
+	config, err := google.JWTConfigFromJSON(
+		creds,
+		sheets.SpreadsheetsScope,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	client := config.Client(ctx)
+	return sheets.New(client)
 }

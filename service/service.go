@@ -16,11 +16,12 @@ type EnquiryServiceI interface {
 }
 
 type EnquiryService struct {
-	EnquiryRepo enquiry.EnquiryRepositoryI
+	EnquiryRepo  enquiry.EnquiryRepositoryI
+	SheetService SheetsServiceI
 }
 
-func NewEnquiryService(repo enquiry.EnquiryRepositoryI) EnquiryServiceI {
-	return &EnquiryService{EnquiryRepo: repo}
+func NewEnquiryService(repo enquiry.EnquiryRepositoryI, sheetService SheetsServiceI) EnquiryServiceI {
+	return &EnquiryService{EnquiryRepo: repo, SheetService: sheetService}
 }
 func (es *EnquiryService) CreateEnquiry(ctx context.Context, enquiry request.Enquiry) error {
 	message, err := json.Marshal(enquiry.Message)
@@ -40,6 +41,11 @@ func (es *EnquiryService) CreateEnquiry(ctx context.Context, enquiry request.Enq
 		return err
 	}
 
+	// Append to Google Sheets
+	err = es.SheetService.AppendEnquiryToSheet(ctx, es.SheetService.(*SheetsService).sheetsClient, enquiryEntity)
+	if err != nil {
+		fmt.Printf("error appending enquiry to sheet: %v\n", err)
+	}
 	return nil
 }
 
