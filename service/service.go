@@ -36,10 +36,10 @@ func (es *EnquiryService) CreateEnquiry(ctx context.Context, enquiry request.Enq
 	}
 
 	// Call the repository's Create method
-	err = es.EnquiryRepo.Create(ctx, enquiryEntity)
-	if err != nil {
-		return err
-	}
+	//err = es.EnquiryRepo.Create(ctx, enquiryEntity)
+	//if err != nil {
+	//	return err
+	//}
 
 	// Append to Google Sheets
 	err = es.SheetService.AppendEnquiryToSheet(ctx, es.SheetService.(*SheetsService).sheetsClient, enquiryEntity)

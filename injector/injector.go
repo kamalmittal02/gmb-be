@@ -11,7 +11,6 @@ import (
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/sheets/v4"
 	"os"
-	"time"
 )
 
 type Injector struct {
@@ -23,11 +22,11 @@ func InitInjector(config *dtos.Config) *Injector {
 	rctx := context.Background()
 	repository := enquiry.NewEnquiryRepository(db)
 	sheetClient, err := SheetsService(rctx)
-	sheetsService := service2.NewSheetsService(sheetClient)
 	if err != nil {
 		fmt.Printf("error initializing sheets service: %v\n", err)
 		panic("error initializing sheets service")
 	}
+	sheetsService := service2.NewSheetsService(sheetClient)
 	service := service2.NewEnquiryService(repository, sheetsService)
 
 	controller := controller2.NewEnquiryController(service)
@@ -37,26 +36,26 @@ func InitInjector(config *dtos.Config) *Injector {
 }
 
 func ConnectDB(databaseURl string) *pgxpool.Pool {
-	if databaseURl == "" {
-		fmt.Print("DATABASE_URL not set")
-		panic("DATABASE_URL not set")
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	pool, err := pgxpool.New(ctx, databaseURl)
-	if err != nil {
-		fmt.Printf("failed to create connection pool: %v\n", err)
-		panic("failed to create connection pool")
-	}
-
-	if err := pool.Ping(ctx); err != nil {
-		fmt.Printf("failed to ping database: %v\n", err)
-		panic("failed to ping database")
-	}
-
-	return pool
+	//if databaseURl == "" {
+	//	fmt.Print("DATABASE_URL not set")
+	//	panic("DATABASE_URL not set")
+	//}
+	//
+	//ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	//defer cancel()
+	//
+	//pool, err := pgxpool.New(ctx, databaseURl)
+	//if err != nil {
+	//	fmt.Printf("failed to create connection pool: %v\n", err)
+	//	panic("failed to create connection pool")
+	//}
+	//
+	//if err := pool.Ping(ctx); err != nil {
+	//	fmt.Printf("failed to ping database: %v\n", err)
+	//	panic("failed to ping database")
+	//}
+	//
+	return nil
 }
 
 func SheetsService(ctx context.Context) (*sheets.Service, error) {
