@@ -5,23 +5,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/kamalmittal01/girraj-sweet-showcase-BE/entity"
-	"github.com/kamalmittal01/girraj-sweet-showcase-BE/repository/enquiry"
 	"github.com/kamalmittal01/girraj-sweet-showcase-BE/request"
-	"time"
 )
 
 type EnquiryServiceI interface {
 	CreateEnquiry(ctx context.Context, enquiry request.Enquiry) error
-	GetEnquiry(ctx context.Context, createdAt time.Time) (*[]entity.Enquiry, error)
 }
 
 type EnquiryService struct {
-	EnquiryRepo  enquiry.EnquiryRepositoryI
 	SheetService SheetsServiceI
 }
 
-func NewEnquiryService(repo enquiry.EnquiryRepositoryI, sheetService SheetsServiceI) EnquiryServiceI {
-	return &EnquiryService{EnquiryRepo: repo, SheetService: sheetService}
+func NewEnquiryService(sheetService SheetsServiceI) EnquiryServiceI {
+	return &EnquiryService{SheetService: sheetService}
 }
 func (es *EnquiryService) CreateEnquiry(ctx context.Context, enquiry request.Enquiry) error {
 	message, err := json.Marshal(enquiry.Message)
@@ -49,11 +45,11 @@ func (es *EnquiryService) CreateEnquiry(ctx context.Context, enquiry request.Enq
 	return nil
 }
 
-func (es *EnquiryService) GetEnquiry(ctx context.Context, createdAt time.Time) (*[]entity.Enquiry, error) {
-	res, err := es.EnquiryRepo.GetAll(ctx, createdAt)
-	if err != nil {
-		fmt.Println(fmt.Errorf("error getting enquiries: %v", err))
-		return nil, err
-	}
-	return res, nil
-}
+//func (es *EnquiryService) GetEnquiry(ctx context.Context, createdAt time.Time) (*[]entity.Enquiry, error) {
+//	res, err := es.EnquiryRepo.GetAll(ctx, createdAt)
+//	if err != nil {
+//		fmt.Println(fmt.Errorf("error getting enquiries: %v", err))
+//		return nil, err
+//	}
+//	return res, nil
+//}

@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/kamalmittal01/girraj-sweet-showcase-BE/config"
 	"github.com/kamalmittal01/girraj-sweet-showcase-BE/dtos"
 	"github.com/kamalmittal01/girraj-sweet-showcase-BE/injector"
 	"net/http"
@@ -36,15 +35,15 @@ func parseArgs() *CmdArgs {
 func NewBaseApp() *BaseApp {
 	cmdArgs := parseArgs()
 	fmt.Printf("Parsing config: %s \n", cmdArgs.configPath)
-	config, err := config.InitConfig(cmdArgs.configPath)
-	if err != nil {
-		fmt.Printf("Failed to load config: %s \n", err.Error())
-		panic("Failed to load config")
-	}
-	di := injector.InitInjector(config)
+	//config, err := config.InitConfig(cmdArgs.configPath)
+	//if err != nil {
+	//	fmt.Printf("Failed to load config: %s \n", err.Error())
+	//	panic("Failed to load config")
+	//}
+	di := injector.InitInjector()
 	return &BaseApp{
-		Config: config,
-		di:     di,
+		//Config: config,
+		di: di,
 	}
 }
 

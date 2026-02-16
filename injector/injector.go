@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
 	controller2 "github.com/kamalmittal01/girraj-sweet-showcase-BE/controller"
-	"github.com/kamalmittal01/girraj-sweet-showcase-BE/dtos"
-	"github.com/kamalmittal01/girraj-sweet-showcase-BE/repository/enquiry"
 	service2 "github.com/kamalmittal01/girraj-sweet-showcase-BE/service"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/sheets/v4"
@@ -17,17 +15,17 @@ type Injector struct {
 	EnquiryController controller2.EnquiryControllerI
 }
 
-func InitInjector(config *dtos.Config) *Injector {
-	db := ConnectDB(config.Database.Url)
+func InitInjector() *Injector {
+	//db := ConnectDB(config.Database.Url)
 	rctx := context.Background()
-	repository := enquiry.NewEnquiryRepository(db)
+	//repository := enquiry.NewEnquiryRepository(db)
 	sheetClient, err := SheetsService(rctx)
 	if err != nil {
 		fmt.Printf("error initializing sheets service: %v\n", err)
 		panic("error initializing sheets service")
 	}
 	sheetsService := service2.NewSheetsService(sheetClient)
-	service := service2.NewEnquiryService(repository, sheetsService)
+	service := service2.NewEnquiryService(sheetsService)
 
 	controller := controller2.NewEnquiryController(service)
 	return &Injector{
