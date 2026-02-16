@@ -9,6 +9,7 @@ import (
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/sheets/v4"
 	"os"
+	"strings"
 )
 
 type Injector struct {
@@ -57,9 +58,23 @@ func ConnectDB(databaseURl string) *pgxpool.Pool {
 }
 
 func SheetsService(ctx context.Context) (*sheets.Service, error) {
-	creds, err := os.ReadFile(os.Getenv("GOOGLE_CREDENTIALS_JSON"))
-	if err != nil {
-		return nil, err
+	val := os.Getenv("GOOGLE_CREDENTIALS_JSON")
+	if val == "" {
+		return nil, fmt.Errorf("GOOGLE_CREDENTIALS_JSON not set")
+	}
+
+	var creds []byte
+	var err error
+
+	// If env contains JSON directly (Render)
+	if strings.HasPrefix(strings.TrimSpace(val), "{") {
+		creds = []byte(val)
+	} else {
+		// Otherwise treat as file path (local)
+		creds, err = os.ReadFile(val)
+		if err != nil {
+			return nil, fmt.Errorf("failed reading credentials file: %w", err)
+		}
 	}
 
 	config, err := google.JWTConfigFromJSON(
@@ -67,7 +82,7 @@ func SheetsService(ctx context.Context) (*sheets.Service, error) {
 		sheets.SpreadsheetsScope,
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid google credentials: %w", err)
 	}
 
 	client := config.Client(ctx)
